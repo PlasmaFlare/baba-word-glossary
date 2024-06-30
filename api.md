@@ -57,7 +57,9 @@ Each word entry is a table in this format:
 - `thumbnail_obj` - string (optional): the object to display as a thumbnail for the word entry. (Ex: `text_stable`)
   - If left blank, this would be set to "text_`name`". So if `name` = "cut" then `thumbnail_obj` = "text_cut".
 - `text_type` - int (optional): the text type of this word entry.
-  - If left empty, this would be set to the text_type of the `thumbnail_obj`
+  - If left empty, this would be set to the text_type of the `thumbnail_obj` (or "object" if the `thumbnail_obj` is not a text)
+- `custom_type` - string (optional): if not nil, this overrides the rendering of the object type with a custom string.
+  - If left empty, the string associated with the `text_type` will be shown.
 - `display_name` - string (optional): what to display as the title of this word entry.
   - If left empty, this would be set to `name`
   - If the text type isn't from the base game, it will show "Other".  (See [register_custom_text_type](#keysword_glossary_funcsregister_custom_text_type)).

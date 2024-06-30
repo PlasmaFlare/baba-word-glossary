@@ -438,14 +438,30 @@ local function display_word_info(entry_index)
 
     yOffset = yOffset + NAME_MARGIN/2
 
-    if text_ref ~= nil then
-        local text_type = word_entry.text_type or text_ref.type
+    -- Determine the value to show under "Type:"
+    local text_type_desc
+    if word_entry.custom_type then
+        text_type_desc = word_entry.custom_type
+    else
+        local get_text_type = nil
+        if word_entry.text_type then -- If user specifies a word type, honor their request
+            get_text_type = word_entry.text_type
+        elseif text_ref then
+            if text_ref.unittype ~= "text" then
+                text_type_desc = "object"
+            else
+                get_text_type = text_ref.type
+            end
+        end
 
-        local text_type_desc = custom_text_types[text_type] or TEXT_TYPE_MAPPING[text_type] or "other ("..text_type..")"
+        if get_text_type then
+            text_type_desc = custom_text_types[get_text_type] or TEXT_TYPE_MAPPING[get_text_type] or "other ("..get_text_type..")"
+        end
+    end
+
+    if text_type_desc then
         writetext("$0,2Type:$0,3 ", -1, TEXT_DISPLAY_X_OFFSET1, f_tilesize * yOffset, LETTERCLEAR_TYPE)
-
         yOffset = yOffset + VALUE_MARGIN
-
         writetext(text_type_desc, -1, TEXT_DISPLAY_X_OFFSET1, f_tilesize * yOffset, LETTERCLEAR_TYPE)
     else
         yOffset = yOffset + VALUE_MARGIN
