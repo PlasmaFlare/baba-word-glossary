@@ -50,6 +50,7 @@ Each word entry is a table in this format:
     - Control Icons (Ex: `@gamepad_editor_rotate`)
     - Lang texts (Ex: `#main_custom`)
 - `author` - string (optional): The author to credit for this text. (See [register_author](#keysword_glossary_funcsregister_author)).
+  - If the author isn't registered via "register_author", it would just show the text itself
   - If left blank, the author will be shown as "N/A"
 - `group` - string (optional): If this text is part of a modpack or some other group of texts, put the name of the group here.
   - If left blank, it won't show any group.

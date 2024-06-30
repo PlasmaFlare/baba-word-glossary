@@ -454,7 +454,7 @@ local function display_word_info(entry_index)
     yOffset = yOffset + FIELD_MARGIN
 
 
-    local author_text = authors[word_entry.author] or "N/A"
+    local author_text = authors[word_entry.author] or word_entry.author or "N/A"
 
     writetext("$0,2Author:$0,3", -1, TEXT_DISPLAY_X_OFFSET1, f_tilesize * yOffset, LETTERCLEAR_TYPE)
     yOffset = yOffset + VALUE_MARGIN
