@@ -389,11 +389,6 @@ local function display_word_info(entry_index)
     MF_letterclear(LETTERCLEAR_TYPE)
     
     local word_entry = word_glossary[entry_index]
-    local text_ref = get_text_ref(word_entry.thumbnail_obj)
-
-    if text_ref == nil then
-        writetext("error: \""..tostring(word_entry.thumbnail_obj).."\" is not registered in objlist.", -1, f_tilesize * 0.5, f_tilesize * 9.4, LETTERCLEAR_TYPE)
-    end
 
     local yOffset = NAME_Y
 
@@ -446,11 +441,17 @@ local function display_word_info(entry_index)
         local get_text_type = nil
         if word_entry.text_type then -- If user specifies a word type, honor their request
             get_text_type = word_entry.text_type
-        elseif text_ref then
+        else
+            local text_ref = get_text_ref(word_entry.thumbnail_obj)
+
+            if text_ref == nil then
+                writetext("error: \""..tostring(word_entry.thumbnail_obj).."\" is not registered in objlist.", -1, f_tilesize * 0.5, f_tilesize * 9.4, LETTERCLEAR_TYPE)
+            else
             if text_ref.unittype ~= "text" then
                 text_type_desc = "object"
             else
                 get_text_type = text_ref.type
+                end
             end
         end
 
