@@ -1,8 +1,30 @@
 
-# Adding custom words to the Word Glossary
+# Adding custom words to the Word Glossary <!-- omit from toc -->
 The mod exposes a basic API for other mods to add their own entries with the Word Glossary. The functions and global variables in the API will only be present if the game detects the word glossary mod installed (a side effect of putting them in `keys`, which is a global table in base-game that gets re-initialized when reloading mods).
 
 For a complete example of the API being used, view the [Plasma's Modpack implementation](https://github.com/PlasmaFlare/plasma-baba-mods/blob/master/Lua/glossary.lua).
+
+# Table of Contents <!-- omit from toc -->
+- [Global Variables](#global-variables)
+  - [`keys.IS_WORD_GLOSSARY_PRESENT`](#keysis_word_glossary_present)
+- [`keys.WORD_GLOSSARY_VERSION`](#keysword_glossary_version)
+- [Functions](#functions)
+  - [`keys.WORD_GLOSSARY_FUNCS.add_entries_to_word_glossary`](#keysword_glossary_funcsadd_entries_to_word_glossary)
+    - [Fields](#fields)
+      - [`name`](#name)
+      - [`description`](#description)
+      - [`author`](#author)
+      - [`group`](#group)
+      - [`thumbnail_obj`](#thumbnail_obj)
+      - [`text_type`](#text_type)
+      - [`custom_type`](#custom_type)
+      - [`display_name`](#display_name)
+      - [`display_sprites`](#display_sprites)
+    - [Examples:](#examples)
+  - [`keys.WORD_GLOSSARY_FUNCS.register_author`](#keysword_glossary_funcsregister_author)
+    - [Example](#example)
+  - [`keys.WORD_GLOSSARY_FUNCS.register_custom_text_type`](#keysword_glossary_funcsregister_custom_text_type)
+    - [Example](#example-1)
 
 ## Global Variables
 
@@ -41,30 +63,107 @@ Each word entry is a table in this format:
     display_sprites: list of strings (optional)
 }
 ```
+#### Fields
+##### `name`
+Type: string
 
-- `name` - string: the name of the word entry. This can be used as a default for most of the optional fields in the word entry. 
-- `description` - string: description what the text or object does.
-  - This supports:
-    - Newlines
-    - Color codes (Ex: `$3,2`).
-    - Control Icons (Ex: `@gamepad_editor_rotate`)
-    - Lang texts (Ex: `#main_custom`)
-- `author` - string (optional): The author to credit for this text. (See [register_author](#keysword_glossary_funcsregister_author)).
-  - If the author isn't registered via "register_author", it would just show the text itself
-  - If left blank, the author will be shown as "N/A"
-- `group` - string (optional): If this text is part of a modpack or some other group of texts, put the name of the group here.
-  - If left blank, it won't show any group.
-- `thumbnail_obj` - string (optional): the object to display as a thumbnail for the word entry. (Ex: `text_stable`)
-  - If left blank, this would be set to "text_`name`". So if `name` = "cut" then `thumbnail_obj` = "text_cut".
-- `text_type` - int (optional): the text type of this word entry.
-  - If left empty, this would be set to the text_type of the `thumbnail_obj` (or "object" if the `thumbnail_obj` is not a text)
-- `custom_type` - string (optional): if not nil, this overrides the rendering of the object type with a custom string.
-  - If left empty, the string associated with the `text_type` will be shown.
-- `display_name` - string (optional): what to display as the title of this word entry.
-  - If left empty, this would be set to `name`
-  - If the text type isn't from the base game, it will show "Other".  (See [register_custom_text_type](#keysword_glossary_funcsregister_custom_text_type)).
-- `display_sprites` - list of strings (optional): a table representing a list of objects to display on the left side when viewing the word entry in-game. You can show up to a maximum of 16 objects. Any extra objects will be ignored
-  - If left empty, this would be set to `{thumbnail_obj}`, or simply the object shown in the thumbnail.
+The name of the word entry.
+
+This can be used as a default for most of the optional fields in the word entry.
+____
+
+##### `description`
+Type: string
+
+Description what the text or object does.
+
+This supports:
+  - Newlines
+  - Color codes (Ex: `$3,2`).
+  - Control Icons (Ex: `@gamepad_editor_rotate`)
+  - Lang texts (Ex: `#main_custom`)
+____
+
+##### `author`
+Type: string (optional)
+
+The author to credit for this text. (See [register_author](#keysword_glossary_funcsregister_author)).
+
+- If the author isn't registered via "register_author", it would just show the text itself
+
+- If left blank, the author will be shown as "N/A"
+
+____
+
+##### `group`
+Type: string (optional)
+
+The name of the modpack or some other group of texts that this text is a part of, if applicable.
+
+- If left blank, it won't show any group.
+
+____
+
+##### `thumbnail_obj`
+Type string (optional)
+
+The object to display as a thumbnail for the word entry. (Ex: `text_stable`)
+
+- If left blank, this would be set to "text_`name`". So if `name` = "cut" then `thumbnail_obj` = "text_cut".
+
+____
+
+##### `text_type`
+Type: int (optional)
+
+The text type of this word entry.
+
+- If left empty, this would be set to the text_type of the `thumbnail_obj` (or "object" if the `thumbnail_obj` is not a text)
+____
+
+##### `custom_type`
+Type: string (optional)
+
+- If not nil, this overrides the rendering of the object type with a custom string.
+
+- If left empty, the string associated with the `text_type` will be shown.
+____
+
+##### `display_name`
+Type: string (optional)
+
+What to display as the title of this word entry.
+
+- If left empty, this would be set to `name`.
+
+- If the text type isn't from the base game, it will show "Other".  (See [register_custom_text_type](#keysword_glossary_funcsregister_custom_text_type)).
+
+____
+
+##### `display_sprites`
+Type: list of items (optional)
+
+A table representing a list of objects to display on the left side when viewing the word entry in-game.
+
+- You can show up to a maximum of 16 objects. Any extra objects will be ignored.
+
+- If left empty, this would be set to `{thumbnail_obj}`, or simply the object shown in the thumbnail.
+
+- Each item in `display_sprites` is either the following:
+  - A string representing the name of the object registered in-game
+  - A table that has these fields defined:
+    ```lua
+    {
+      sprite: "baba_2",
+      color: {0,3},
+      sprite_in_root: false
+    }
+    ```
+      - `sprite`: The name of the sprite in the `Sprites` folder
+        - If you want to use "baba_2_1.png", use "baba_2"
+      - `color`: the color of the sprite as coordinates in the current palette
+      - `sprite_in_root`: If true, the game will look at `<baba install dir>/Data/Sprites` for the sprite. If false, the game will look at `<levelpack folder>/Sprites` for your sprite.
+
 
 #### Examples:
 ```lua
