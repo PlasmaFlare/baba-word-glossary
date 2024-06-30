@@ -509,22 +509,34 @@ local function display_word_info(entry_index)
     local scale = display_config.scale
 
     for i = 1, num_sprites_to_display do
-        local sprite_name = display_sprites[i]
-
-        local sprite_ref = get_text_ref(sprite_name)
+        local sprite_name
         local sprite_in_root
         local color
-        if sprite_ref == nil then
-            sprite_name = "error"
-            sprite_in_root = true
-            color = {0,3}
-        else
-            color = sprite_ref.colour_active or sprite_ref.colour
 
-            if sprite_ref.sprite_in_root == nil then
+        if type(display_sprites[i]) == "table" then
+            sprite_name = display_sprites[i].sprite
+            sprite_in_root = display_sprites[i].sprite_in_root
+            color = display_sprites[i].color or {0,3}
+        else
+            sprite_name = display_sprites[i].."_0"
+
+            local sprite_ref = get_text_ref(sprite_name)
+            if sprite_ref == nil then
+                sprite_name = "error_0"
                 sprite_in_root = true
-            else    
-                sprite_in_root = sprite_ref.sprite_in_root
+                color = {0,3}
+            else
+                if sprite_ref.sprite ~= nil then
+                    -- Special case where the text ref has a specified sprite
+                    sprite_name = sprite_ref.sprite.."_0"
+                end
+                color = sprite_ref.colour_active or sprite_ref.colour
+    
+                if sprite_ref.sprite_in_root == nil then
+                    sprite_in_root = true
+                else    
+                    sprite_in_root = sprite_ref.sprite_in_root
+                end
             end
         end
 
@@ -532,7 +544,7 @@ local function display_word_info(entry_index)
 
         local offset = display_config.offsets[i]
 
-        MF_loadsprite(display_unit,sprite_name.."_0",i, not sprite_in_root)
+        MF_loadsprite(display_unit,sprite_name,i, not sprite_in_root)
         MF_setcolour(display_unit, color[1], color[2])
         local unit = mmf.newObject(display_unit)
         unit.values[XPOS] = f_tilesize * (DISPLAY_X + offset[1])
@@ -658,6 +670,11 @@ menufuncs.word_glossary = {
                     has_errored = true
                 else
                     color = text_ref.colour_active or text_ref.colour
+
+                    if text_ref.sprite then
+                        -- Special case where the text ref has a specified sprite
+                        thumbnail_sprite = text_ref.sprite
+                    end
 
                     if text_ref.sprite_in_root then
                         path = "Sprites/"
