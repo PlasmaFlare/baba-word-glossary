@@ -518,7 +518,8 @@ local function display_word_info(entry_index)
             sprite_in_root = display_sprites[i].sprite_in_root
             color = display_sprites[i].color or {0,3}
         else
-            sprite_name = display_sprites[i].."_0"
+            -- 
+            sprite_name = display_sprites[i]
 
             local sprite_ref = get_text_ref(sprite_name)
             if sprite_ref == nil then
@@ -526,6 +527,7 @@ local function display_word_info(entry_index)
                 sprite_in_root = true
                 color = {0,3}
             else
+                sprite_name = sprite_name.."_0"
                 if sprite_ref.sprite ~= nil then
                     -- Special case where the text ref has a specified sprite
                     sprite_name = sprite_ref.sprite.."_0"
