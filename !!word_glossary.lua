@@ -519,10 +519,10 @@ local function display_word_info(entry_index)
                     err_msg = "error: \""..tostring(word_entry.base_obj).."\" is not registered in objlist"
                 end
             else
-            if text_ref.unittype ~= "text" then
-                text_type_desc = "object"
-            else
-                get_text_type = text_ref.type
+                if text_ref.unittype ~= "text" then
+                    text_type_desc = "object"
+                else
+                    get_text_type = text_ref.type
                 end
             end
         end
@@ -731,7 +731,7 @@ menufuncs.word_glossary = {
 
             local thumbnail_sprite = "error"
             local color = {0,3}
-            local path = "Sprites/"
+            local sprite_in_root = true
 
             if entry == nil then
                 local msg = "Word Glossary Error: \""..tostring(entry_index).."\" is not defined in the word glossary"
@@ -739,29 +739,37 @@ menufuncs.word_glossary = {
                 print(msg)
                 has_errored = true
             else
-                thumbnail_sprite = entry.thumbnail_obj
-
-                local text_ref = get_text_ref(thumbnail_sprite)
-                if text_ref == nil then
-                    print("Word Glossary Error: \""..tostring(thumbnail_sprite).."\" is not a valid object.")
-                    thumbnail_sprite = "error"
-                    has_errored = true
+                if type(entry.thumbnail) == "table" then
+                    thumbnail_sprite = entry.thumbnail.sprite
+                    sprite_in_root = entry.thumbnail.sprite_in_root
+                    color = entry.thumbnail.color or {0,3}
                 else
-                    color = text_ref.colour_active or text_ref.colour
+                    thumbnail_sprite = entry.thumbnail
 
-                    if text_ref.sprite then
-                        -- Special case where the text ref has a specified sprite
-                        thumbnail_sprite = text_ref.sprite
-                    end
-
-                    if text_ref.sprite_in_root then
-                        path = "Sprites/"
+                    local text_ref = get_text_ref(thumbnail_sprite)
+                    if text_ref == nil then
+                        print("Word Glossary Error: \""..tostring(thumbnail_sprite).."\" is not a valid object.")
+                        thumbnail_sprite = "error"
+                        has_errored = true
                     else
-                        local world = generaldata.strings[WORLD]
-                        path = "Worlds/" .. world .. "/Sprites/"
+                        color = text_ref.colour_active or text_ref.colour
+
+                        if text_ref.sprite then
+                            -- Special case where the text ref has a specified sprite
+                            thumbnail_sprite = text_ref.sprite
+                        end
+
+                        sprite_in_root = text_ref.sprite_in_root
                     end
                 end
             end
+
+            local path = "Sprites/"
+            if not sprite_in_root then
+                local world = generaldata.strings[WORLD]
+                path = "Worlds/" .. world .. "/Sprites/"
+            end
+
             
             local buttonfunc = GLOSSARY_PREFIX..entry_index
             local button = createbutton_objlist(buttonfunc,(f_tilesize * 2) * (x + 0.35), (f_tilesize * 2) * (y + 4.4),

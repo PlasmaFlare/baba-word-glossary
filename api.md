@@ -60,10 +60,10 @@ Each word entry is a table in this format:
     description: string
     author: string (optional)
     group: string (optional)
-    thumbnail: string (optional)
+    thumbnail: string or table (optional)
     text_type: int (optional)
     display_name: string (optional) 
-    display_sprites: list of strings (optional)
+    display_sprites: list of string or table (optional)
 
     -- Deprecated fields
     name: string (optional)
@@ -117,11 +117,24 @@ The name of the modpack or some other group of texts that this text is a part of
 ____
 
 ##### `thumbnail`
-Type string (optional)
+Type string or table (optional)
 
-The object to display as a thumbnail for the word entry. (Ex: `text_stable`)
+The object/sprite to display as a thumbnail for the word entry. (Ex: `text_stable`)
 
-- If left blank, this would be set to "text_`name`". So if `name` = "cut" then `thumbnail_obj` = "text_cut".
+- If left blank, this would be set to "text_`base_obj`". So if `base_obj` = "cut" then `thumbnail` = "text_cut".
+
+- If thumbnail is a table, then the following fields have to be defined:
+  ```lua
+  {
+    sprite: "baba_2",
+    color: {0,3},
+    sprite_in_root: false
+  }
+  ```
+    - `sprite`: The name of the sprite in the `Sprites` folder
+      - Ex: If you want to use "baba_2_1.png", use "baba_2"
+    - `color`: the color of the sprite as coordinates in the current palette
+    - `sprite_in_root`: If true, the game will look at `<baba install dir>/Data/Sprites` for the sprite. If false, the game will look at `<levelpack folder>/Sprites` for your sprite.
 
 ____
 
@@ -130,7 +143,7 @@ Type: int (optional)
 
 The text type of this word entry.
 
-- If left empty, this would be set to the text_type of the `thumbnail_obj` (or "object" if the `thumbnail_obj` is not a text)
+- If left empty, this would be set to the text_type of the `base_obj` (or the string "object" if `base_obj` does not refer to a text)
 ____
 
 ##### `custom_type`
@@ -159,7 +172,7 @@ A table representing a list of objects to display on the left side when viewing 
 
 - You can show up to a maximum of 16 objects. Any extra objects will be ignored.
 
-- If left empty, this would be set to `{thumbnail_obj}`, or simply the object shown in the thumbnail.
+- If left empty, this would be set to `{thumbnail}`, or simply the object shown in the thumbnail.
 
 - Each item in `display_sprites` is one of the following:
   - A string representing an object name registered in-game.
@@ -172,7 +185,7 @@ A table representing a list of objects to display on the left side when viewing 
     }
     ```
       - `sprite`: The name of the sprite in the `Sprites` folder
-        - If you want to use "baba_2_1.png", use "baba_2"
+        - Ex: If you want to use "baba_2_1.png", use "baba_2"
       - `color`: the color of the sprite as coordinates in the current palette
       - `sprite_in_root`: If true, the game will look at `<baba install dir>/Data/Sprites` for the sprite. If false, the game will look at `<levelpack folder>/Sprites` for your sprite.
 
