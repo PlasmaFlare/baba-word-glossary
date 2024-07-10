@@ -61,6 +61,8 @@ local BABA_FONT_CONSTS = {
     button_w = 24,
 }
 
+local FIELDS_TO_CHECK_IF_NO_BASE_OBJ = {"text_type", "thumbnail", "display_name"}
+
 local DISPLAY_X = 4.25
 local DISPLAY_Y = 5
 local TEXT_DISPLAY_X_OFFSET1 = f_tilesize * 8.50
@@ -154,16 +156,81 @@ local function get_text_ref(name)
     return editor_objlist[text_ref_index]
 end
 
--- local
-function compile_word_entry(entry)
-    -- If display is not defined, make it <entry.name>
-    if entry.display_name == nil then
-        entry.display_name = entry.name
+--[[
+    This function is for a specific case where if base_obj is unset, certain other fields
+    defined in FIELDS_TO_CHECK_IF_NO_BASE_OBJ have to be set. If this check fails, it raises
+    a detailed error message for the user.
+]]
+local function check_required_fields_on_unset_base_obj(entry)
+    local unset_fields = nil
+    for _, field in ipairs(FIELDS_TO_CHECK_IF_NO_BASE_OBJ) do
+        if entry[field] == nil and (field ~= "text_type" or entry["custom_type"] == nil) then
+            if unset_fields == nil then
+                unset_fields = '"'..field..'"'
+            else
+                unset_fields = unset_fields..',"'..field..'"'
+            end
+
+            if field == "text_type" then
+                unset_fields = unset_fields.." or \"custom_type\""
+            end
+        end
     end
 
-    -- If thumbnail object is not defined, make it text_<entry.name>
-    if entry.thumbnail_obj == nil then
-        entry.thumbnail_obj = "text_"..entry.name
+    if unset_fields ~= nil then
+        local entry_str = "{"
+        local kv_count = 0
+        for k,v in pairs(entry) do
+            if type(v) == "table" then
+                v = "<table>"
+            end
+            entry_str = entry_str..string.format("\n    %s: %s", k, v)
+
+            kv_count = kv_count + 1
+            if kv_count > 10 then
+                -- Just to avoid flooding the error window
+                entry_str = entry_str.."\n    ..."
+                break
+            end
+        end
+        entry_str = entry_str.."\n}"
+
+        local err_msg = string.format([[
+(Word Glossary Error): Found a word entry with "base_obj" unset and missing fields. Either set "base_obj" or fill in the missing fields.
+
+The missing fields are: %s
+
+The word entry is:
+%s
+]], unset_fields, entry_str)
+
+        error(err_msg)
+    end
+end
+
+-- local
+function compile_word_entry(entry)
+    if entry.base_obj == nil then
+        if entry.thumbnail_obj ~= nil then
+            entry.base_obj = entry.thumbnail_obj
+        elseif entry.name ~= nil then
+            entry.base_obj = "text_"..entry.name
+        else
+            check_required_fields_on_unset_base_obj(entry)
+        end
+    end
+
+    -- If display is not defined, make it <entry.name>
+    if entry.display_name == nil then
+        entry.display_name = entry.base_obj
+    end
+
+    if entry.thumbnail == nil then
+        if entry.thumbnail_obj ~= nil then
+            entry.thumbnail = entry.thumbnail_obj
+        else
+            entry.thumbnail = entry.base_obj
+        end
     end
 
     -- If no description was provided, provide a placeholder text
@@ -173,7 +240,7 @@ function compile_word_entry(entry)
 
     -- by default, display the thumbnail object
     if entry.display_sprites == nil then
-        entry.display_sprites = {entry.thumbnail_obj}
+        entry.display_sprites = {entry.thumbnail}
     end
 
     -- Compile entry.description to entry.desc_lines. Splits the description to list of lines, implementing word wrapping
@@ -385,6 +452,8 @@ local function display_word_info(entry_index)
         return
     end
 
+    local err_msg = nil
+
     MF_letterclear(LETTERCLEAR_TYPE)
     
     local word_entry = word_glossary[entry_index]
@@ -441,10 +510,14 @@ local function display_word_info(entry_index)
         if word_entry.text_type then -- If user specifies a word type, honor their request
             get_text_type = word_entry.text_type
         else
-            local text_ref = get_text_ref(word_entry.thumbnail_obj)
+            local text_ref = get_text_ref(word_entry.base_obj)
 
             if text_ref == nil then
-                writetext("error: \""..tostring(word_entry.thumbnail_obj).."\" is not registered in objlist.", -1, f_tilesize * 0.5, f_tilesize * 9.4, LETTERCLEAR_TYPE)
+                if word_entry.base_obj == nil then
+                    err_msg = "error: Specify base_obj or a text/object type for this entry."
+                else
+                    err_msg = "error: \""..tostring(word_entry.base_obj).."\" is not registered in objlist"
+                end
             else
             if text_ref.unittype ~= "text" then
                 text_type_desc = "object"
@@ -561,6 +634,10 @@ local function display_word_info(entry_index)
     end
 
     curr_entry_index = entry_index
+
+    if err_msg then
+        writetext(err_msg, -1, f_tilesize * 0.5, f_tilesize * 9.4, LETTERCLEAR_TYPE)
+    end
 end
 
 local old_buttonclicked = buttonclicked

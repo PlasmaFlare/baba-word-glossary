@@ -11,15 +11,18 @@ For a complete example of the API being used, view the [Plasma's Modpack impleme
 - [Functions](#functions)
   - [`keys.WORD_GLOSSARY_FUNCS.add_entries_to_word_glossary`](#keysword_glossary_funcsadd_entries_to_word_glossary)
     - [Fields](#fields)
-      - [`name`](#name)
+      - [`base_obj`](#base_obj)
       - [`description`](#description)
       - [`author`](#author)
       - [`group`](#group)
-      - [`thumbnail_obj`](#thumbnail_obj)
+      - [`thumbnail`](#thumbnail)
       - [`text_type`](#text_type)
       - [`custom_type`](#custom_type)
       - [`display_name`](#display_name)
       - [`display_sprites`](#display_sprites)
+    - [Deprecated Fields:](#deprecated-fields)
+      - [~~`name`~~](#name)
+      - [~~`thumbnail_obj`~~](#thumbnail_obj)
     - [Examples:](#examples)
   - [`keys.WORD_GLOSSARY_FUNCS.register_author`](#keysword_glossary_funcsregister_author)
     - [Example](#example)
@@ -53,23 +56,32 @@ Adds a list of word entries to the word glossary in the order presented in `entr
 Each word entry is a table in this format:
 ```lua
 {
-    name: string
+    base_obj: string
     description: string
     author: string (optional)
     group: string (optional)
-    thumbnail_obj: string (optional)
+    thumbnail: string (optional)
     text_type: int (optional)
     display_name: string (optional) 
     display_sprites: list of strings (optional)
+
+    -- Deprecated fields
+    name: string (optional)
+    thumbnail_obj: string (optional)
 }
 ```
 #### Fields
-##### `name`
+##### `base_obj`
 Type: string
 
-The name of the word entry.
+This is the object registered in-game to serve as a base for getting most properties for the word entry. In most use-cases for simply adding a modded word, `base_obj` is effectively required.
 
-This can be used as a default for most of the optional fields in the word entry.
+The object associated with `base_obj` has to be defined in-game (aka in `editor_objlist`) in order to work.
+
+If you want more customization without having to rely on `base_obj`, it's possible to not set `base_obj` to anything. But then you will need to provide the following fields or else it will error:
+- `display_name`
+- `thumbnail`
+- `text_type` or `custom_type`
 ____
 
 ##### `description`
@@ -104,7 +116,7 @@ The name of the modpack or some other group of texts that this text is a part of
 
 ____
 
-##### `thumbnail_obj`
+##### `thumbnail`
 Type string (optional)
 
 The object to display as a thumbnail for the word entry. (Ex: `text_stable`)
@@ -149,8 +161,8 @@ A table representing a list of objects to display on the left side when viewing 
 
 - If left empty, this would be set to `{thumbnail_obj}`, or simply the object shown in the thumbnail.
 
-- Each item in `display_sprites` is either the following:
-  - A string representing the name of the object registered in-game
+- Each item in `display_sprites` is one of the following:
+  - A string representing an object name registered in-game.
   - A table that has these fields defined:
     ```lua
     {
@@ -164,14 +176,28 @@ A table representing a list of objects to display on the left side when viewing 
       - `color`: the color of the sprite as coordinates in the current palette
       - `sprite_in_root`: If true, the game will look at `<baba install dir>/Data/Sprites` for the sprite. If false, the game will look at `<levelpack folder>/Sprites` for your sprite.
 
+#### Deprecated Fields:
+##### ~~`name`~~
+Type: string
+The name of the word entry. 
+
+**Note:** If you were using this field for version V1 of the Word Glossary, you should still be able to use this field for V2 upwards. But it's recommended that you convert from using `name` to using `base_obj`.
+
+
+##### ~~`thumbnail_obj`~~
+Type string (optional)
+
+The object to display as a thumbnail for the word entry. (Ex: `text_stable`)
+
+**Note:** If you were using this field for version V1 of the Word Glossary, you should still be able to use this field for V2 upwards. But it's recommended that you convert from using `thumbnail_obj` to using `thumbnail`.
 
 #### Examples:
 ```lua
 keys.WORD_GLOSSARY_FUNCS.add_entries_to_word_glossary({
 
-    -- Basic example. This adds text_guard to the word glossary. Thumbnails, text type, display sprites and display names are taken care of.
+    -- Basic example. This adds text_guard to the word glossary. Thumbnails, text type, display sprites and display names are taken care of because of base_obj.
     {
-        name = "guard",
+        base_obj = "guard",
         author = "PlasmaFlare",
         description = "Allows objects to sacrifice themselves in order to save another object from being destroyed.",
     },
@@ -182,7 +208,7 @@ keys.WORD_GLOSSARY_FUNCS.add_entries_to_word_glossary({
     -- The weird indentation for the description is because [[]] counts every character within the brackets, including newlines and tabs/spaces, into its value.
     -- Notice how the description also uses color codes.
     {
-        name = "cut",
+        base_obj = "cut",
         author = "PlasmaFlare",
         description = 
 [[Gives an object the ability to split a text block into individual letters.
@@ -199,10 +225,11 @@ keys.WORD_GLOSSARY_FUNCS.add_entries_to_word_glossary({
 
 
     -- A more customized word entry for directional you. This has a custom thumbnail, a custom title (display_name), and 4 display sprites for showing the 4 different directions of directional you when viewing the word entry in-game.
+    -- base_obj is not defined because the word entry has the required fields needed to cover for it (See base_obj documentation).
     {
-        name = "arrow_you",
-        thumbnail_obj = "text_youright",
+        thumbnail = "text_youright",
         display_name = "directional you",
+        text_type = 2,
         author = "PlasmaFlare",
         display_sprites = {"text_youup", "text_youright", "text_youleft", "text_youdown"}
         description = [[Variant of "YOU" that allows the player to move the object the direction of the arrow. Objects that are directional YOU can still trigger "WIN", and will be destroyed on "DEFEAT" object, like normal "YOU" objects.]],
