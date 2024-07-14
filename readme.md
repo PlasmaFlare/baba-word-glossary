@@ -22,5 +22,13 @@ If you are a Baba modder with your own custom words that you want to register, c
 ### [API Documentation Link](api.md)
 
 ## Changelog
+- Version 2 (7/14/24)
+  - Reformatted api.md
+  - `name` and `thumbnail_obj` are now deprecated due to unclear naming and usage. Added `base_obj` and `thumbnail` to replace them (see documentation for more details)
+  - Added ability to specify a specific sprite and color for `thumbnail` and `display_sprites`
+  - Show the string "object" if word entry's `text_type` field is nil and the `base_obj` is not a text type. In other words, if the word entry is for a non-text type, display object.
+  - Added `custom_type` field to override default rendering of the Type field
+  - If the `author` isn't registered, just show the author in plain white text.
+  - `keys.WORD_GLOSSARY_VERSION` is now a string instead of a number
 - Version 1 (6/7/24)
   - Initial Release
