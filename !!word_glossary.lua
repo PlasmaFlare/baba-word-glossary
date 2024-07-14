@@ -1,5 +1,5 @@
 keys.IS_WORD_GLOSSARY_PRESENT = true
-keys.WORD_GLOSSARY_VERSION = 1
+keys.WORD_GLOSSARY_VERSION = "2"
 
 local word_glossary_credit = string.format("$0,1Word Glossary Mod V%s - by Plasmaflare", keys.WORD_GLOSSARY_VERSION)
 

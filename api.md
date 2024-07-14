@@ -42,7 +42,7 @@ end
 ```
 
 ## `keys.WORD_GLOSSARY_VERSION`
-Number for the word glossary version.
+String for the word glossary version
 
 ## Functions
 
