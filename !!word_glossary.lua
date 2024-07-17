@@ -225,6 +225,15 @@ function compile_word_entry(entry)
         entry.display_name = entry.base_obj
     end
 
+    truncate_text_prefix_in_display_name = entry.truncate_text_prefix_in_display_name or true
+
+    -- Special case for handling when the display_name has "text_". Made it an option in case you want to display metatext
+    if truncate_text_prefix_in_display_name then
+        while string.sub(entry.display_name, 1,5) == "text_" do
+            entry.display_name = string.sub(entry.display_name, 6, string.len(entry.display_name))
+        end
+    end
+
     if entry.thumbnail == nil then
         if entry.thumbnail_obj ~= nil then
             entry.thumbnail = entry.thumbnail_obj

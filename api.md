@@ -20,6 +20,7 @@ For a complete example of the API being used, view the [Plasma's Modpack impleme
       - [`custom_type`](#custom_type)
       - [`display_name`](#display_name)
       - [`display_sprites`](#display_sprites)
+      - [`truncate_text_prefix_in_display_name`](#truncate_text_prefix_in_display_name)
     - [Deprecated Fields:](#deprecated-fields)
       - [~~`name`~~](#name)
       - [~~`thumbnail_obj`~~](#thumbnail_obj)
@@ -64,6 +65,7 @@ Each word entry is a table in this format:
     text_type: int (optional)
     display_name: string (optional) 
     display_sprites: list of string or table (optional)
+    truncate_text_prefix_in_display_name: boolean (optional)
 
     -- Deprecated fields
     name: string (optional)
@@ -188,6 +190,15 @@ A table representing a list of objects to display on the left side when viewing 
         - Ex: If you want to use "baba_2_1.png", use "baba_2"
       - `color`: the color of the sprite as coordinates in the current palette
       - `sprite_in_root`: If true, the game will look at `<baba install dir>/Data/Sprites` for the sprite. If false, the game will look at `<levelpack folder>/Sprites` for your sprite.
+
+##### `truncate_text_prefix_in_display_name`
+Type: boolean (optional). Default: `true `
+
+If true, the string for `display_name` will truncate every "text_" prefix.
+
+Examples:
+- If `display_name` = "text_wall", then it gets truncated to "wall"
+- If `display_name` = "text_text_baba", then it gets truncated to "baba"
 
 #### Deprecated Fields:
 ##### ~~`name`~~
