@@ -22,6 +22,10 @@ If you are a Baba modder with your own custom words that you want to register, c
 ### [API Documentation Link](api.md)
 
 ## Changelog
+- Version 2.1 (7/17/24)
+  - Truncate "text_" in the display_name by default. Also added option `truncate_text_prefix_in_display_name` to disable this.
+  - For `display_sprites` and `thumbnail` options, use "colour" as an alt name to "color"
+  - Change default of display_sprites to use base_obj instead of thumbnail
 - Version 2 (7/14/24)
   - Reformatted api.md
   - `name` and `thumbnail_obj` are now deprecated due to unclear naming and usage. Added `base_obj` and `thumbnail` to replace them (see documentation for more details)
