@@ -136,6 +136,7 @@ The object/sprite to display as a thumbnail for the word entry. (Ex: `text_stabl
     - `sprite`: The name of the sprite in the `Sprites` folder
       - Ex: If you want to use "baba_2_1.png", use "baba_2"
     - `color`: the color of the sprite as coordinates in the current palette
+      - Can also use `colour` as an alternative name for this parameter
     - `sprite_in_root`: If true, the game will look at `<baba install dir>/Data/Sprites` for the sprite. If false, the game will look at `<levelpack folder>/Sprites` for your sprite.
 
 ____
@@ -189,6 +190,7 @@ A table representing a list of objects to display on the left side when viewing 
       - `sprite`: The name of the sprite in the `Sprites` folder
         - Ex: If you want to use "baba_2_1.png", use "baba_2"
       - `color`: the color of the sprite as coordinates in the current palette
+        - Can also use `colour` as an alternative name for this parameter
       - `sprite_in_root`: If true, the game will look at `<baba install dir>/Data/Sprites` for the sprite. If false, the game will look at `<levelpack folder>/Sprites` for your sprite.
 
 ##### `truncate_text_prefix_in_display_name`

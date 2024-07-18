@@ -597,7 +597,7 @@ local function display_word_info(entry_index)
         if type(display_sprites[i]) == "table" then
             sprite_name = display_sprites[i].sprite
             sprite_in_root = display_sprites[i].sprite_in_root
-            color = display_sprites[i].color or {0,3}
+            color = display_sprites[i].colour or display_sprites[i].color or {0,3}
         else
             -- 
             sprite_name = display_sprites[i]
@@ -751,7 +751,7 @@ menufuncs.word_glossary = {
                 if type(entry.thumbnail) == "table" then
                     thumbnail_sprite = entry.thumbnail.sprite
                     sprite_in_root = entry.thumbnail.sprite_in_root
-                    color = entry.thumbnail.color or {0,3}
+                    color = entry.thumbnail.colour or entry.thumbnail.color or {0,3}
                 else
                     thumbnail_sprite = entry.thumbnail
 
