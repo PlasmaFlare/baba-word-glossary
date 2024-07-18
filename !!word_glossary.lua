@@ -247,9 +247,10 @@ function compile_word_entry(entry)
         entry.description = "(No description was found)"
     end
 
-    -- by default, display the thumbnail object
+    -- by default, display the base object
     if entry.display_sprites == nil then
-        entry.display_sprites = {entry.thumbnail}
+        
+        entry.display_sprites = {entry.base_obj}
     end
 
     -- Compile entry.description to entry.desc_lines. Splits the description to list of lines, implementing word wrapping

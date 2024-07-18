@@ -175,7 +175,7 @@ A table representing a list of objects to display on the left side when viewing 
 
 - You can show up to a maximum of 16 objects. Any extra objects will be ignored.
 
-- If left empty, this would be set to `{thumbnail}`, or simply the object shown in the thumbnail.
+- If left empty, this would be set to `{base_obj}`, or simply the base_obj.
 
 - Each item in `display_sprites` is one of the following:
   - A string representing an object name registered in-game.
